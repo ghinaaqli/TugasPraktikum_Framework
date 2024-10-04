@@ -1,6 +1,17 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\ProductController;
+
+Route::get('/product/{id}', [ProductController::class, 'index']);
+Route::get('/Product/create', [ProductController::class, 'create']);
+Route::post('/product', [ProductController::class, 'store']);
+Route::get('/product/{id}', [ProductController::class, 'show']);
+Route::get('/product/{id}/edit', [ProductController::class, 'edit']);
+Route::put('/product/{id}', [ProductController::class, 'update']);
+Route::delete('/product/{id}', [ProductController::class, 'destroy']);
 
 /*
 |--------------------------------------------------------------------------
@@ -17,36 +28,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/hello', function () {
-    return 'Hello, World!';
-});
-
-Route::get('/user/{id}', function ($id) {
-    return 'User ID: '.$id;
-});
-
-Route::get('/user/{name?}', function ($name = 'Guest') {
-    return 'Hello, '.$name;
-});
-
-Route::get('/profile', function () {
-    return 'PROFILE PAGE';
-})->name('profile');
-
-Route::get('/redirect-to-profile', function () {
-    return redirect()->route('profile');
-});
-
-Route::prefix('/admin')->group(function () {
-    Route::get('/dashboard', function() {
-        return 'Admin Dashboard';
-    });
-
-    Route::get('/profile', function() {
-        return 'Admin Profile';
-    });
-});
-
 Route::get('/dashboard', function () {
-    return 'Welcome to your dashboard';
-})->middleware('auth');
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
