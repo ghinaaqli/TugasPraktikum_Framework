@@ -23,8 +23,8 @@ Route::get('/product/create', [ProductController::class, 'create'])->name("produ
 Route::post('/product', [ProductController::class, 'store'])->name("product-store");
 Route::get('/product/{id}', [ProductController::class, 'show']);
 Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name("product-edit");
-Route::get('/product/{id}', [ProductController::class, 'update'])->name("product-update");
-Route::get('/product/{id}', [ProductController::class, 'destroy']);
+Route::put('/product/{id}', [ProductController::class, 'update'])->name("product-update");
+Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product-deleted');
 
 Route::get('/supplier/create', [SupplierController::class, 'create'])->name("supplier-create");
 Route::post('/supplier', [SupplierController::class, 'store'])->name("supplier-store");

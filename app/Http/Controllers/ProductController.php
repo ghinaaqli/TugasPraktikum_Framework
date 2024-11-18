@@ -12,8 +12,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-      //mengambil data dari database melalui model Product,
-      //fungsi all() sama seperti SELECT * FROM
+        //mengambil data dari database melalui model Product,
+        //fungsi all() sama seperti SELECT * FROM
         $data = Product::all();
         return view("master-data.product-master.index-product", compact('data'));
     }
@@ -24,31 +24,28 @@ class ProductController extends Controller
     public function create()
     {
         return view("master-data.product-master.create-product");
-       
     }
 
-   
+
     public function store(Request $request)
     {
         // validasi input data
-$validasi_data = $request->validate([
-    'product_name' => 'required|string|max:255',
-    'unit'         => 'required|string|max:50',
-    'type'         => 'required|string|max:50',
-    'information'  => 'nullable|string',
-    'qty'          => 'required|integer',
-    'producer'     => 'required|string|max:255',
-]);
+        $validasi_data = $request->validate([
+            'product_name' => 'required|string|max:255',
+            'unit'         => 'required|string|max:50',
+            'type'         => 'required|string|max:50',
+            'information'  => 'nullable|string',
+            'qty'          => 'required|integer',
+            'producer'     => 'required|string|max:255',
+        ]);
 
-// Proses simpan data kedalam database
-Product::create($validasi_data);
+        // Proses simpan data kedalam database
+        Product::create($validasi_data);
 
-return redirect()->back()->with('success', 'Product created successfully!');
-
-
+        return redirect()->back()->with('success', 'Product created successfully!');
     }
 
-        public function show(string $id)
+    public function show(string $id)
     {
         //
     }
@@ -94,6 +91,11 @@ return redirect()->back()->with('success', 'Product created successfully!');
      */
     public function destroy(string $id)
     {
-        //
+        $Product = Product::find($id);
+        if ($Product) {
+            $Product->delete();
+        } else {
+            echo 'Product not found';
+        }
     }
 }
