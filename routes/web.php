@@ -4,14 +4,18 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ProductController;
+use App\Models\Product;
+use Doctrine\DBAL\Schema\Index;
+use GuzzleHttp\Promise\Create;
 
-Route::get('/product/{id}', [ProductController::class, 'index']);
-Route::get('/Product/create', [ProductController::class, 'create'])->name("product-create");
-Route::post('/product', [ProductController::class, 'store'])->name("product-store");
-Route::get('/product/{id}', [ProductController::class, 'show']);
-Route::get('/product/{id}/edit', [ProductController::class, 'edit']);
-Route::put('/product/{id}', [ProductController::class, 'update']);
-Route::delete('/product/{id}', [ProductController::class, 'destroy']);
+Route::get('/products', [ProductController::class, 'index'])->name(name: 'products-index');
+Route::get('/products/create', [ProductController::class, 'create'])->name("product-create");
+Route::post('/products', [ProductController::class, 'store'])->name("product-store");
+Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name("product-edit");
+Route::put('/products/{id}', [ProductController::class, 'update'])->name("product-update");
+Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
+Route::get('/supplier/create', [SupplierController::class, 'create'])->name("supplier-create");
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +42,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
-
-
+require __DIR__ . '/auth.php';

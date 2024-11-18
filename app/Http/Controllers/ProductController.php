@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\products;
 
 class ProductController extends Controller
 {
@@ -12,7 +13,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $data = products::all();
+        return view("master-data.product-master.index-products", compact('data'));
     }
 
     /**
@@ -28,21 +30,23 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //validasi input data
+        // Validasi input data
         $validasi_data = $request->validate([
-            'product_name' => 'required|string|max:255',
-            'unit' => 'required|string|max:50',
-            'type' => 'required|string|max:50',
+            'product_name' => 'required | max:255',
+            'unit' => 'required | string | max:50',
+            'type' => 'required | string | max:50',
             'information' => 'nullable|string',
-            'qty' => 'required|integer',
-            'producer' => 'required|sting|max:255'
+            'qty' => 'required | integer',
+            'producer' => 'required | string | max:255',
         ]);
 
-        //proses simpan data kedalam database
-        Product::create($validasi_data);
+        // Proses simpan data ke dalam database
+        products::create($validasi_data);
 
         return redirect()->back()->with('success', 'Product created successfully');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -57,7 +61,8 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $product = products::findOrFail($id);
+        return view('master-data.product-master.edit-product', compact('product'));
     }
 
     /**
@@ -65,7 +70,26 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'product_name' => 'required|string|max:255',
+            'unit' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'information' => 'nullable|string',
+            'qty' => 'required|integer|min:1',
+            'producer' => 'required|string|max:255',
+        ]);
+
+        $product = products::findOrFail($id);
+        $product->update([
+            'product_name' => $request->product_name,
+            'unit' => $request->unit,
+            'type' => $request->type,
+            'information' => $request->information,
+            'qty' => $request->qty,
+            'producer' => $request->producer,
+        ]);
+
+        return redirect()->back()->with('success', 'Product update successfully');
     }
 
     /**

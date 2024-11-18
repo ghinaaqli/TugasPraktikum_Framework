@@ -9,12 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('products', function (Blueprint $table) {
             $table->string('producer')->after('qty');
         });
     }
+
 
     /**
      * Reverse the migrations.
