@@ -2,100 +2,92 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsExport;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //mengambil data dari database melalui model Product,
-        //fungsi all() sama seperti SELECT * FROM
-        $data = Product::all();
+        $query = Product::query();
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'like', '%' . $search . '%'); // Gunakan nama kolom yang benar
+            });
+        }
+
+        $data = $query->paginate(2);
         return view("master-data.product-master.index-product", compact('data'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view("master-data.product-master.create-product");
     }
 
-
     public function store(Request $request)
     {
-        // validasi input data
-        $validasi_data = $request->validate([
+        $validatedData = $request->validate([
             'product_name' => 'required|string|max:255',
             'unit'         => 'required|string|max:50',
             'type'         => 'required|string|max:50',
             'information'  => 'nullable|string',
-            'qty'          => 'required|integer',
+            'qty'          => 'required|integer|min:1',
             'producer'     => 'required|string|max:255',
         ]);
 
-        // Proses simpan data kedalam database
-        Product::create($validasi_data);
+        Product::create($validatedData);
 
-        return redirect()->back()->with('success', 'Product created successfully!');
+        return redirect()->route('product-index')->with('success', 'Product created successfully!');
     }
 
     public function show(string $id)
     {
-        //
+        $product = Product::findOrFail($id);
+        return view("master-data.product-master.detail-product", compact('product'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $product = Product::findOrFail($id);
         return view('master-data.product-master.edit-product', compact('product'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'product_name' => 'required|string|max:255',
-            'unit' => 'required|string|max:255',
-            'type' => 'required|string|max:255',
-            'information' => 'nullable|string',
-            'qyt' => 'required|integer|min:1',
-            'producer' => 'required|string|max:255',
+            'unit'         => 'required|string|max:255',
+            'type'         => 'required|string|max:255',
+            'information'  => 'nullable|string',
+            'qty'          => 'required|integer|min:1',
+            'producer'     => 'required|string|max:255',
         ]);
 
         $product = Product::findOrFail($id);
-        $product->update([
-            'product_name' => $request->product_name,
-            'unit' => $request->unit,
-            'type' => $request->type,
-            'information' => $request->information,
-            'qyt' => $request->qyt,
-            'producer' => $request->producer,
-        ]);
+        $product->update($validatedData);
 
-        return redirect()->back()->with('success', 'Product update Successfully!');
+        return redirect()->route('product-index')->with('success', 'Product updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $Product = Product::find($id);
-        if ($Product) {
-            $Product->delete();
-        } else {
-            echo 'Product not found';
+        $product = Product::find($id);
+
+        if ($product) {
+            $product->delete();
+            return redirect()->route('product-index')->with('success', 'Product deleted successfully.');
         }
+
+        return redirect()->route('product-index')->with('error', 'Product not found.');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new ProductsExport, 'product.xlsx');
     }
 }

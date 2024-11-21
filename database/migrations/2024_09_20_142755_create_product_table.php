@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
-
-            $table->string('product_name'); 
-            $table->string('unit'); 
-            $table->string('type'); 
-            $table->string('information'); 
+            $table->id(); // Kolom id auto-increment secara bawaan
+            $table->string('product_name');
+            $table->string('unit');
+            $table->string('type');
+            $table->text('information')->nullable();
             $table->integer('qty');
-
+            $table->string('producer');
             $table->timestamps();
         });
     }
