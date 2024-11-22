@@ -37,9 +37,6 @@
         </button>
       </a>
 
-
-
-
       <table class="min-w-full border border-collapse border-gray-200">
         <thead>
           <tr class="bg-gray-100">
@@ -120,5 +117,4 @@
       }
     }
   </script>
-
 </x-app-layout>
