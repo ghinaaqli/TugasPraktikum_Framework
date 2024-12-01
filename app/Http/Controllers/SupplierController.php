@@ -30,15 +30,15 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'name' => 'required|string|max:255', 
-            'phone' => 'required|string|max:50', 
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:50',
             'address' => 'nullable|string',
             'comment' => 'required|string|max:255',
         ]);
-        
+
         // Process saving data to the database
         Supplier::create($validated_data);
-        
+
         return redirect()->back()->with('success', 'Supplier created successfully!');
     }
 

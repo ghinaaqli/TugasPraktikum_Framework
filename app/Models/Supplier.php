@@ -10,19 +10,19 @@ class Supplier extends Model
     use HasFactory;
 
 
-
     protected $fillable = [
         'name',   
         'phone',  
         'address',
         'comment', 
+        'supplier_name'
         
     ];
 
     // Anda juga bisa menambahkan relasi jika diperlukan
     // Contoh relasi dengan produk:
-    public function product()
+    public function products()
     {
-        return $this->hasMany(product::class);
+        return $this->hasMany(Product::class);
     }
 }

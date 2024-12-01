@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ProductsExport;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Supplier;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\PDF;
 
@@ -12,7 +13,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::with('supplier');
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -22,12 +23,15 @@ class ProductController extends Controller
         }
 
         $data = $query->paginate(2);
+        // return $data;
+
         return view("master-data.product-master.index-product", compact('data'));
     }
 
     public function create()
     {
-        return view("master-data.product-master.create-product");
+        $suppliers = Supplier::all();
+        return view("master-data.product-master.create-product", compact('suppliers'));
     }
 
     public function store(Request $request)
@@ -39,6 +43,7 @@ class ProductController extends Controller
             'information'  => 'nullable|string',
             'qty'          => 'required|integer|min:1',
             'producer'     => 'required|string|max:255',
+            'supplier_id'  => 'required|exists:suppliers,id',
         ]);
 
         Product::create($validatedData);
@@ -52,11 +57,19 @@ class ProductController extends Controller
         return view("master-data.product-master.detail-product", compact('product'));
     }
 
-    public function edit(string $id)
+    public function edit($id)
     {
+        // Ambil data produk berdasarkan ID
         $product = Product::findOrFail($id);
-        return view('master-data.product-master.edit-product', compact('product'));
+
+        // Ambil semua data supplier untuk dropdown
+        $suppliers = Supplier::all();
+
+        // Redirect ke view edit
+        return view('master-data.product-master.edit-product', compact('product', 'suppliers'));
     }
+
+
 
     public function update(Request $request, string $id)
     {
